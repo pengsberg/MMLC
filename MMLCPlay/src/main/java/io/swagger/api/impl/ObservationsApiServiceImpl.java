@@ -17,14 +17,16 @@ import life.memy.data.DatabaseClass;
 import life.memy.data.ObservationServiceDao;
 import life.memy.exception.DataNotFoundException;
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-11-07T18:24:01.292Z")
+//@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-11-07T18:24:01.292Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-12-25T15:49:48.554Z")
 public class ObservationsApiServiceImpl extends ObservationsApiService {
 	private DatabaseClass database = DatabaseClass.getDatabaseClass();
 	ObservationServiceDao observationService = database.getObservationRepo();
 	
     @Override
     public Response observationsGet(String customsystemid, String customuserid, SecurityContext securityContext) throws NotFoundException {
-        List<Observation> observations = observationService.getAllObservations();
+        List<Observation> observations = observationService.getAllObservations(customuserid);
+        //List<Observation> observations = observationService.getAllObservations();
         return Response.ok().entity(observations).build();
     }
     @Override
@@ -46,7 +48,13 @@ public class ObservationsApiServiceImpl extends ObservationsApiService {
     }
     @Override
     public Response observationsTypeObservationtypeGet(String observationtype,String customsystemid,String customuserid,SecurityContext securityContext) throws NotFoundException {
-    	Observation observationOut = observationService.findByObservationtype(observationtype);
-        return Response.ok().entity(observationOut).build();
-    }
+    	List<Observation> observations = observationService.findByObservationtype(observationtype,customuserid);
+    	return Response.ok().entity(observations).build();
+    }  
+   
+    
+    //public Response observationsTypeObservationtypeGet(String observationtype,String customsystemid,String customuserid,SecurityContext securityContext) throws NotFoundException {
+    //	Observation observationOut = observationService.findByObservationtype(observationtype,customuserid);
+    //    return Response.ok().entity(observationOut).build();
+    //}
 }

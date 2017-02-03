@@ -38,7 +38,8 @@ import java.util.List;
 /**
  * Observation
  */
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-11-17T17:56:44.743Z")
+//@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-11-17T17:56:44.743Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-12-25T15:49:48.554Z")
 public class Observation extends Entity  {
   @JsonProperty("docid")
   private String docid = null;

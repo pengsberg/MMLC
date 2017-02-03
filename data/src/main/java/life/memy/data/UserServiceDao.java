@@ -1,6 +1,7 @@
 package life.memy.data;
 
 import static com.couchbase.client.java.query.Select.select;
+import static com.couchbase.client.java.query.dsl.Expression.i;
 import static com.couchbase.client.java.query.dsl.Expression.x;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -26,10 +27,16 @@ public class UserServiceDao extends BaseDao {
 	}
 	
 	public User findByUsername(String userName) {
-		Statement statement = select("*").from(bucket.name())
+		Statement statement = select("*")
+				.from(i(bucket.name()))
 				.where(x("username").eq("$username").and(x("type").eq("$type")));
-		JsonObject placeholderValues = JsonObject.create().put("username", userName).put("type", "user");
+
+		JsonObject placeholderValues = JsonObject.create()
+											.put("username", userName)
+											.put("type", "user");
+
 		N1qlQuery q = N1qlQuery.parameterized(statement, placeholderValues );
+		
 		User user = new User();
 		for (N1qlQueryRow row : bucket.query(q)) {
 		    JsonObject jsonObject = row.value();
@@ -43,7 +50,8 @@ public class UserServiceDao extends BaseDao {
 	}
 	
 	public List<User> getAllUsers() {
-		Statement statement = select("*").from(bucket.name()).where(x("type").eq(x("$type")));
+		Statement statement = select("*").from(i(bucket.name())).where(x("type").eq(x("$type")));
+		
 		JsonObject placeholderValues = JsonObject.create().put("type", "user");
 		N1qlQuery q = N1qlQuery.parameterized(statement, placeholderValues );
 		List<User> users = new ArrayList<>();
@@ -77,6 +85,23 @@ public class UserServiceDao extends BaseDao {
 		return fromJsonDocument(docOut);
 	}
 	
+	public User update(User user) {
+
+		if(isBlank(user.getDocid())) {
+			//TO_DO
+			// Cannot update User, if docid is missing
+			
+		}
+		
+		JsonDocument docIn = toJsonDocument(user);
+		JsonDocument docOut;
+		try {
+			docOut = bucket.upsert(docIn);
+		} catch (CouchbaseException e) {
+			throw new RepositoryException(e);
+		}
+		return fromJsonDocument(docOut);
+	}
 	
 	/**
 	 * Converts a JsonDocument into an object of the specified type

@@ -14,6 +14,7 @@ import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.query.N1qlQuery;
 import com.couchbase.client.java.query.N1qlQueryRow;
 import com.couchbase.client.java.query.Statement;
+import com.couchbase.client.java.query.dsl.Sort;
 
 import io.swagger.model.Observation;
 import life.memy.exception.DataNotFoundException;
@@ -31,23 +32,63 @@ public class ObservationServiceDao extends BaseDao {
 		super(cluster, bucketName);
 	}
 	
+//	public Observation findByObservationtype(String observationtype, String customuserid) {
+//	Statement statement = select("*").from(bucket.name())
+//			.where(x("observationtype").eq("$observationt//ype").and(x("type").eq("$type")));
+//	
+//	Statement statement = select("*").from(bucket.name())
+//			.where(x("observationtype").eq("$observationtype").and(x("type").eq("$type")));
+//	
+//	JsonObject placeholderValues = JsonObject.create().put("observationtype", observationtype)
+//			.put("type", "observation");
+//	
+//	N1qlQuery q = N1qlQuery.parameterized(statement, placeholderValues );
+//	
+//	Observation observation = new Observation();
+//	for (N1qlQueryRow row : bucket.query(q)) {
+//	    JsonObject jsonObject = row.value();
+//	    JsonObject value = (JsonObject) jsonObject.get(bucketName);
+//	    observation = converter.fromJson(value.toString(), Observation.class);
+////	    observations.add(observation);
+//	}
+//	if (observation.getDocid() == null) {
+//		throw new DataNotFoundException("Observation with observationtype " + observationtype + " not found");
+//	}
+//	return observation;
+//}	
 	
-	public Observation findByObservationtype(String observationtype) {
+	public List<Observation> findByObservationtype(String observationtype, String customuserid) {
+		
+		if (customuserid == null) {
+			//ToDo: throw exception when customuserid is not in the header
+		}
+		
 		Statement statement = select("*").from(bucket.name())
-				.where(x("observationtype").eq("$observationtype").and(x("type").eq("$type")));
-		JsonObject placeholderValues = JsonObject.create().put("observationtype", observationtype)
-				.put("type", "observation");
+				.where(x("observationtype").eq("$observationtype")
+						.and(x("type").eq("$type"))
+						.and(x("subjectid").eq("$subjectid")))
+						.orderBy(Sort.desc("observationcreateddatetime"));
+		
+		
+		JsonObject placeholderValues = JsonObject.create()
+												.put("observationtype", observationtype)
+												.put("type", "observation")
+												.put("subjectid", customuserid);
+		
 		N1qlQuery q = N1qlQuery.parameterized(statement, placeholderValues );
-		Observation observation = new Observation();
+		
+		List<Observation> observations = new ArrayList<>();
 		for (N1qlQueryRow row : bucket.query(q)) {
 		    JsonObject jsonObject = row.value();
 		    JsonObject value = (JsonObject) jsonObject.get(bucketName);
-		    observation = converter.fromJson(value.toString(), Observation.class);
+		    Observation observation = converter.fromJson(value.toString(), Observation.class);
+		    observations.add(observation);
 		}
-		if (observation.getDocid() == null) {
-    		throw new DataNotFoundException("Observation with observationtype " + observationtype + " not found");
-    	}
-		return observation;
+		
+		if (observations.size() == 0) {
+			throw new DataNotFoundException("Observation with observationtype " + observationtype + " not found");
+		}
+		return observations;
 	}
 
 	
@@ -70,10 +111,25 @@ public class ObservationServiceDao extends BaseDao {
 	}
 	
 	
-	public List<Observation> getAllObservations() {
-		Statement statement = select("*").from(bucket.name()).where(x("type").eq(x("$type")));
-		JsonObject placeholderValues = JsonObject.create().put("type", "observation");
+	public List<Observation> getAllObservations(String customuserid) {
+		//Statement statement = select("*").from(bucket.name()).where(x("type").eq(x("$type")));
+		
+		if (customuserid == null) {
+			//ToDo: throw exception when customuserid is not in the header
+		}
+		
+		Statement statement = select("*").from(bucket.name())
+				.where(x("type").eq("$type")
+						.and(x("subjectid").eq("$subjectid")))
+						.orderBy(Sort.desc("observationcreateddatetime"));
+
+		//JsonObject placeholderValues = JsonObject.create().put("type", "observation");
+		JsonObject placeholderValues = JsonObject.create()
+				.put("type", "observation")
+				.put("subjectid", customuserid);
+
 		N1qlQuery query = N1qlQuery.parameterized(statement, placeholderValues );
+		
 		List<Observation> observations = new ArrayList<>();
 		for (N1qlQueryRow row : bucket.query(query)) {
 		    JsonObject jsonObject = row.value();

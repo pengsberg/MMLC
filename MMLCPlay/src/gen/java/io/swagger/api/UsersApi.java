@@ -28,7 +28,8 @@ import javax.ws.rs.*;
 
 
 @io.swagger.annotations.Api(description = "the users API")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-11-26T08:28:50.378Z")
+//@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-11-26T08:28:50.378Z")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-12-25T15:49:48.554Z")
 public class UsersApi  {
    private final UsersApiService delegate = UsersApiServiceFactory.getUsersApi();
 
@@ -57,6 +58,21 @@ public class UsersApi  {
     throws NotFoundException {
         return delegate.usersPost(body,uriInfo, securityContext);
     }
+
+   @PUT
+    
+    @Consumes({ "application/json" })
+    @Produces({ "application/json" })
+    @io.swagger.annotations.ApiOperation(value = "Update user", notes = "Update existing user by docid.", response = User.class, tags={  })
+    @io.swagger.annotations.ApiResponses(value = { 
+        @io.swagger.annotations.ApiResponse(code = 200, message = "OK", response = User.class) })
+    public Response usersPut(@ApiParam(value = "" ,required=true) User body, @Context UriInfo uriInfo
+,@Context SecurityContext securityContext)
+    throws NotFoundException {
+        return delegate.usersPut(body,uriInfo,securityContext);
+    }
+    
+    
     @GET
     @Path("/{userid}")
     

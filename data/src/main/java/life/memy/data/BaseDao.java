@@ -30,6 +30,10 @@ public class BaseDao {
 		try {
 			this.bucketName = bucketName;
 			bucket = cluster.openBucket(bucketName);
+			
+			// Create a N1QL Primary Index (but ignore if it exists)
+	        bucket.bucketManager().createN1qlPrimaryIndex(true, false);
+			
 		} catch (CouchbaseException e) {
 			throw new RepositoryException(e);
 		}
