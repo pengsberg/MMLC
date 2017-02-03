@@ -6,9 +6,7 @@
 		<relativePath>../mmlc/pom.xml</relativePath>
 	</parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>life.memy</groupId>
   <artifactId>data</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   
   <dependencies>
 		<dependency>
