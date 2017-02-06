@@ -1,0 +1,8 @@
+.project
+.metadata
+.classpath
+*/target/
+*/.settings/
+Servers/
+application.properties
+
