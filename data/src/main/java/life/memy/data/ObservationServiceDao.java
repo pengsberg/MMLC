@@ -5,6 +5,7 @@ import static com.couchbase.client.java.query.dsl.Expression.x;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.couchbase.client.core.CouchbaseException;
@@ -15,6 +16,7 @@ import com.couchbase.client.java.query.N1qlQuery;
 import com.couchbase.client.java.query.N1qlQueryRow;
 import com.couchbase.client.java.query.Statement;
 import com.couchbase.client.java.query.dsl.Sort;
+import com.couchbase.client.java.query.dsl.path.AsPath;
 
 import io.swagger.model.Observation;
 import life.memy.exception.DataNotFoundException;
@@ -32,35 +34,56 @@ public class ObservationServiceDao extends BaseDao {
 		super(cluster, bucketName);
 	}
 	
-//	public Observation findByObservationtype(String observationtype, String customuserid) {
-//	Statement statement = select("*").from(bucket.name())
-//			.where(x("observationtype").eq("$observationt//ype").and(x("type").eq("$type")));
-//	
-//	Statement statement = select("*").from(bucket.name())
-//			.where(x("observationtype").eq("$observationtype").and(x("type").eq("$type")));
-//	
-//	JsonObject placeholderValues = JsonObject.create().put("observationtype", observationtype)
-//			.put("type", "observation");
-//	
-//	N1qlQuery q = N1qlQuery.parameterized(statement, placeholderValues );
-//	
-//	Observation observation = new Observation();
-//	for (N1qlQueryRow row : bucket.query(q)) {
-//	    JsonObject jsonObject = row.value();
-//	    JsonObject value = (JsonObject) jsonObject.get(bucketName);
-//	    observation = converter.fromJson(value.toString(), Observation.class);
-////	    observations.add(observation);
-//	}
-//	if (observation.getDocid() == null) {
-//		throw new DataNotFoundException("Observation with observationtype " + observationtype + " not found");
-//	}
-//	return observation;
-//}	
+	/**
+	  * @see Repository#findById(String, Class<? extends T>) findById
+	  */
+	public Observation findById(String id) {
+		JsonDocument doc = bucket.get(id);
+		if (doc == null) {
+   		throw new DataNotFoundException("resource with docId " + id + " not found");
+   	}
+
+//		If un-commenting the following code, you must complete all required imports.
+		
+//		JsonDocument doc;
+//		String statement = "SELECT customer360.* FROM customer360 USE KEYS $1";
+//		JsonArray values = JsonArray.empty().add(id);
+//		N1qlParams params = N1qlParams.build().consistency(ScanConsistency.REQUEST_PLUS);
+//		ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(statement, values, params);
+//		N1qlQueryResult result = bucket.query(query); 
+//		List<N1qlQueryRow> list = result.allRows(); 
+//	    if (list.size() == 0) {
+//	    	doc = null; 
+//	    } else {
+//	    	N1qlQueryRow firstRow = list.get(0);
+//	    	JsonObject firstRowObject = firstRow.value(); 
+//	    	doc = JsonDocument.create(id, firstRowObject);
+//	    }
+		
+		//return doc == null ? null : fromJsonDocument(doc, type);
+		return fromJsonDocument(doc);
+	}
 	
-	public List<Observation> findByObservationtype(String observationtype, String customuserid) {
+	
+	public List<Observation> findByObservationtype(String observationtype, String customuserid, 
+			Date startdate, Date enddate, String sort, Integer limit, String customsystemid ) {
 		
 		if (customuserid == null) {
-			//ToDo: throw exception when customuserid is not in the header
+			throw new IllegalArgumentException("customuserid is null");
+		}
+		if (observationtype == null) {
+			throw new IllegalArgumentException("observationtype is null");
+		}
+		
+		AsPath prefix = select("*").from(bucket.name());
+		
+		if (startdate != null && enddate != null) {
+			prefix.where(x("observationtype").eq("$observationtype")
+					.and(x("type").eq("$type"))
+					.and(x("subjectid").eq("$subjectid"))
+					.and(x("observationcreateddatetime").gte("$startdate"))
+					.and(x("observationcreateddatetime").lte("$enddate")))
+					.orderBy(Sort.desc("observationcreateddatetime"));
 		}
 		
 		Statement statement = select("*").from(bucket.name())
@@ -71,9 +94,9 @@ public class ObservationServiceDao extends BaseDao {
 		
 		
 		JsonObject placeholderValues = JsonObject.create()
-												.put("observationtype", observationtype)
-												.put("type", "observation")
-												.put("subjectid", customuserid);
+						.put("observationtype", observationtype)
+						.put("type", "observation")
+						.put("subjectid", customuserid);
 		
 		N1qlQuery q = N1qlQuery.parameterized(statement, placeholderValues );
 		
@@ -96,10 +119,8 @@ public class ObservationServiceDao extends BaseDao {
 	  * @see Repository#create(T, Class<? extends T>) create
 	  */
 	public Observation create(Observation observation) {
-		if(isBlank(observation.getDocid())) {
-			String id = getNextId(Observation.class, 1, 100);
-			observation.setDocid(id);
-		}
+		String id = getNextId(Observation.class, 1, 100);
+		observation.setDocid(id);
 		JsonDocument docIn = toJsonDocument(observation);
 		JsonDocument docOut;
 		try {
@@ -110,12 +131,26 @@ public class ObservationServiceDao extends BaseDao {
 		return fromJsonDocument(docOut);
 	}
 	
+	public Observation update(Observation observation) {
+		if(isBlank(observation.getDocid())) {
+			throw new IllegalArgumentException("docid is null");
+		}
+		
+		JsonDocument docIn = toJsonDocument(observation);
+		JsonDocument docOut;
+		try {
+			docOut = bucket.upsert(docIn);
+		} catch (CouchbaseException e) {
+			throw new RepositoryException(e);
+		}
+		return fromJsonDocument(docOut);
+	}
+	
 	
 	public List<Observation> getAllObservations(String customuserid) {
-		//Statement statement = select("*").from(bucket.name()).where(x("type").eq(x("$type")));
 		
 		if (customuserid == null) {
-			//ToDo: throw exception when customuserid is not in the header
+			throw new IllegalArgumentException("customuserid is null");
 		}
 		
 		Statement statement = select("*").from(bucket.name())
@@ -123,7 +158,6 @@ public class ObservationServiceDao extends BaseDao {
 						.and(x("subjectid").eq("$subjectid")))
 						.orderBy(Sort.desc("observationcreateddatetime"));
 
-		//JsonObject placeholderValues = JsonObject.create().put("type", "observation");
 		JsonObject placeholderValues = JsonObject.create()
 				.put("type", "observation")
 				.put("subjectid", customuserid);
@@ -144,51 +178,7 @@ public class ObservationServiceDao extends BaseDao {
 	}
 	
 	
-//	public List<Observation> getAllObservations(){
-//		Map<String,Observation> observations = new HashMap<>();
-//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		Statement statement = select("resourceType","docId","subType", "userId", "observationState","comment","valueDouble",
-//				"observationCreated").from(i(bucket.name())).where(x("resourceType").eq(x("$resType")));
-//		JsonObject placeholderValues = JsonObject.create().put("resType", "observation");
-//		N1qlQuery q = N1qlQuery.parameterized(statement, placeholderValues);
-//		
-//		for (N1qlQueryRow row : bucket.query(q)) {
-//			JsonObject j = row.value();
-//			String docId = j.getString("docId");
-//			if (docId == null) {
-//				docId = j.getString("docid");
-//			}
-//			if (docId == null) {
-//				continue;
-//			}
-//			//JsonDocument doc = JsonDocument.create(docId, content);
-//			
-//			//Observation observation = fromJsonDocument(doc);
-//			Observation observation = new Observation();
-//			
-//			String ds = j.getString("observationCreated");
-//			Date date = null;
-//			try {
-//				date = dateFormat.parse(ds);
-//				observation.setObservationcreateddatetime(date.toString());
-//			} catch (ParseException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			
-//			
-//			//observation.setResourcetype(j.getString("resourceType"));
-//			observation.setDocid(j.getString("docId"));
-//			observation.setSubjectid(j.getString("subType"));
-//			observation.setUserid(j.getString("userId"));
-//			//observation.setObservationState(j.getString("observationState"));
-//			observation.setComment(j.getString("comment"));
-//						
-//			observations.put(observation.getDocid(), observation);
-//		}
-//		return new ArrayList<Observation> (observations.values());
-//	}
-	
+
 	/**
 	 * Converts a JsonDocument into an object of the specified type
 	 * 
@@ -205,7 +195,7 @@ public class ObservationServiceDao extends BaseDao {
 			throw new IllegalStateException("document has no content");
 		}
 		Observation result = converter.fromJson(content.toString(), Observation.class);
-		result.setCas(doc.cas());
+//		result.setCas(doc.cas());
 		return result;
 	}
 	

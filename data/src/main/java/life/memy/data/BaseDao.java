@@ -89,13 +89,14 @@ public class BaseDao {
 	
 	/**
 	 * Generates an ID using the Couchbase counter feature.
+	 * @param <T>
 	 * 
 	 * @param type Class<T> that represents the type of the entity
 	 * @param init Initial value of the counter
 	 * @param incr Amount to increment the counter value each time
 	 * @return Next value of the counter
 	 */
-	protected <T extends Entity> String getNextId(Class<T> type, long incr, 
+	protected <T> String getNextId(Class<T> type, long incr, 
 		long init) {
 		String name = type.getSimpleName().toLowerCase();
 		JsonLongDocument doc = 

@@ -15,13 +15,13 @@ public class Bootstrap extends HttpServlet {
   public void init(ServletConfig config) throws ServletException {
     Info info = new Info()
       .title("Swagger Server")
-      .description("This is a POC for memylife version 1.0.2")
+      .description("An API for accessing memy.life")
       .termsOfService("")
       .contact(new Contact()
         .email(""))
       .license(new License()
         .name("")
-        .url(""));
+        .url("http://unlicense.org"));
 
     ServletContext context = config.getServletContext();
     Swagger swagger = new Swagger().info(info);

@@ -1,11 +1,10 @@
 package io.swagger.api.impl;
 
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -15,10 +14,8 @@ import io.swagger.api.ObservationsApiService;
 import io.swagger.model.Observation;
 import life.memy.data.DatabaseClass;
 import life.memy.data.ObservationServiceDao;
-import life.memy.exception.DataNotFoundException;
 
-//@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-11-07T18:24:01.292Z")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-12-25T15:49:48.554Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-02-09T12:54:48.614Z")
 public class ObservationsApiServiceImpl extends ObservationsApiService {
 	private DatabaseClass database = DatabaseClass.getDatabaseClass();
 	ObservationServiceDao observationService = database.getObservationRepo();
@@ -26,12 +23,11 @@ public class ObservationsApiServiceImpl extends ObservationsApiService {
     @Override
     public Response observationsGet(String customsystemid, String customuserid, SecurityContext securityContext) throws NotFoundException {
         List<Observation> observations = observationService.getAllObservations(customuserid);
-        //List<Observation> observations = observationService.getAllObservations();
         return Response.ok().entity(observations).build();
     }
     @Override
     public Response observationsObservationidGet(String observationid, String customsystemid, String customuserid, SecurityContext securityContext) throws NotFoundException {
-    	Observation observation = observationService.findById(observationid, Observation.class);
+    	Observation observation = observationService.findById(observationid);
         return Response.ok().entity(observation).build();
     }
     @Override
@@ -47,14 +43,13 @@ public class ObservationsApiServiceImpl extends ObservationsApiService {
         		.build();
     }
     @Override
-    public Response observationsTypeObservationtypeGet(String observationtype,String customsystemid,String customuserid,SecurityContext securityContext) throws NotFoundException {
-    	List<Observation> observations = observationService.findByObservationtype(observationtype,customuserid);
-    	return Response.ok().entity(observations).build();
-    }  
-   
-    
-    //public Response observationsTypeObservationtypeGet(String observationtype,String customsystemid,String customuserid,SecurityContext securityContext) throws NotFoundException {
-    //	Observation observationOut = observationService.findByObservationtype(observationtype,customuserid);
-    //    return Response.ok().entity(observationOut).build();
-    //}
+    public Response observationsPut(Observation observation, SecurityContext securityContext) throws NotFoundException {
+        // do some magic!
+        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    }
+    @Override
+    public Response observationsTypeObservationtypeGet(String observationtype, String customuserid, Date startdate, Date enddate, String sort, Integer limit, String customsystemid, SecurityContext securityContext) throws NotFoundException {
+    	List<Observation> observations = observationService.findByObservationtype(observationtype,customuserid, startdate, enddate, sort, limit, customsystemid);
+        return Response.ok().entity(observations).build();
+    }
 }

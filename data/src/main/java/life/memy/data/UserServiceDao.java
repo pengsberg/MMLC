@@ -26,6 +26,36 @@ public class UserServiceDao extends BaseDao {
 		super(cluster, bucketName);
 	}
 	
+	/**
+	  * @see Repository#findById(String, Class<? extends T>) findById
+	  */
+	public User findById(String id) {
+		JsonDocument doc = bucket.get(id);
+		if (doc == null) {
+   		throw new DataNotFoundException("resource with docId " + id + " not found");
+   	}
+
+//		If un-commenting the following code, you must complete all required imports.
+		
+//		JsonDocument doc;
+//		String statement = "SELECT customer360.* FROM customer360 USE KEYS $1";
+//		JsonArray values = JsonArray.empty().add(id);
+//		N1qlParams params = N1qlParams.build().consistency(ScanConsistency.REQUEST_PLUS);
+//		ParameterizedN1qlQuery query = ParameterizedN1qlQuery.parameterized(statement, values, params);
+//		N1qlQueryResult result = bucket.query(query); 
+//		List<N1qlQueryRow> list = result.allRows(); 
+//	    if (list.size() == 0) {
+//	    	doc = null; 
+//	    } else {
+//	    	N1qlQueryRow firstRow = list.get(0);
+//	    	JsonObject firstRowObject = firstRow.value(); 
+//	    	doc = JsonDocument.create(id, firstRowObject);
+//	    }
+		
+		//return doc == null ? null : fromJsonDocument(doc, type);
+		return fromJsonDocument(doc);
+	}
+	
 	public User findByUsername(String userName) {
 		Statement statement = select("*")
 				.from(i(bucket.name()))
@@ -71,10 +101,7 @@ public class UserServiceDao extends BaseDao {
 	  * @see Repository#create(T, Class<? extends T>) create
 	  */
 	public User create(User user) {
-		if(isBlank(user.getDocid())) {
-			String id = getNextId(User.class, 1, 100);
-			user.setDocid(id);
-		}
+		user.setDocid(getNextId(User.class, 1, 100));
 		JsonDocument docIn = toJsonDocument(user);
 		JsonDocument docOut;
 		try {
@@ -86,11 +113,8 @@ public class UserServiceDao extends BaseDao {
 	}
 	
 	public User update(User user) {
-
 		if(isBlank(user.getDocid())) {
-			//TO_DO
-			// Cannot update User, if docid is missing
-			
+			throw new IllegalArgumentException("docid is null");
 		}
 		
 		JsonDocument docIn = toJsonDocument(user);
@@ -119,7 +143,7 @@ public class UserServiceDao extends BaseDao {
 			throw new IllegalStateException("document has no content");
 		}
 		User result = converter.fromJson(content.toString(), User.class);
-		result.setCas(doc.cas());
+//		result.setCas(doc.cas());
 		return result;
 	}
 	
@@ -146,11 +170,4 @@ public class UserServiceDao extends BaseDao {
 			throw new RepositoryException(e);
 		}
 	}
-	
-//	protected String generateDocId() {
-//		String prefix = "USR:";
-//		JsonLongDocument nextIdNumber = bucket.counter("idGeneratorForUsers", 1, 0); //gives 12345
-//		String id = prefix + nextIdNumber;
-//		return id;
-//	}
 }

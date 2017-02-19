@@ -28,8 +28,7 @@ import javax.ws.rs.*;
 
 
 @io.swagger.annotations.Api(description = "the users API")
-//@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-11-26T08:28:50.378Z")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-12-25T15:49:48.554Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-02-09T12:54:48.614Z")
 public class UsersApi  {
    private final UsersApiService delegate = UsersApiServiceFactory.getUsersApi();
 
@@ -37,68 +36,65 @@ public class UsersApi  {
     
     
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = Observation.class, responseContainer = "List", tags={  })
+    @io.swagger.annotations.ApiOperation(value = "Gets some users", notes = "Returns a list of all users.", response = Observation.class, responseContainer = "List", tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "OK", response = Observation.class, responseContainer = "List") })
-    public Response usersGet(@ApiParam(value = "" ,required=true)@HeaderParam("customsystemid") String customsystemid
-,@ApiParam(value = "" ,required=true)@HeaderParam("customuserid") String customuserid
+        @io.swagger.annotations.ApiResponse(code = 200, message = "A list of users", response = Observation.class, responseContainer = "List") })
+    public Response usersGet(@ApiParam(value = "Identifies the user that are logged on the app (service)" ,required=true)@HeaderParam("customuserid") String customuserid
+,@ApiParam(value = "Identifies the system created the observation" )@HeaderParam("customsystemid") String customsystemid
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.usersGet(customsystemid,customuserid,securityContext);
+        return delegate.usersGet(customuserid,customsystemid,securityContext);
     }
     @POST
     
     @Consumes({ "application/json" })
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = User.class, tags={  })
+    @io.swagger.annotations.ApiOperation(value = "Creates a user", notes = "Adds a new user to the user list.", response = User.class, tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "OK", response = User.class) })
+        @io.swagger.annotations.ApiResponse(code = 201, message = "User succesfully created", response = User.class) })
     public Response usersPost(@ApiParam(value = "" ,required=true) User body, @Context UriInfo uriInfo
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
         return delegate.usersPost(body,uriInfo, securityContext);
     }
-
-   @PUT
+    @PUT
     
     @Consumes({ "application/json" })
     @Produces({ "application/json" })
     @io.swagger.annotations.ApiOperation(value = "Update user", notes = "Update existing user by docid.", response = User.class, tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "OK", response = User.class) })
-    public Response usersPut(@ApiParam(value = "" ,required=true) User body, @Context UriInfo uriInfo
+        @io.swagger.annotations.ApiResponse(code = 200, message = "User succesfully updated", response = User.class) })
+    public Response usersPut(@ApiParam(value = "The user to update" ,required=true) User user, @Context UriInfo uriInfo
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.usersPut(body,uriInfo,securityContext);
+        return delegate.usersPut(user,uriInfo,securityContext);
     }
-    
-    
     @GET
     @Path("/{userid}")
     
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = User.class, tags={  })
+    @io.swagger.annotations.ApiOperation(value = "Get specified user", notes = "Returns one user that match userid.", response = User.class, tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "OK", response = User.class) })
+        @io.swagger.annotations.ApiResponse(code = 200, message = "A user", response = User.class) })
     public Response usersUseridGet(@ApiParam(value = "",required=true) @PathParam("userid") String userid
-,@ApiParam(value = "" ,required=true)@HeaderParam("customsystemid") String customsystemid
-,@ApiParam(value = "" ,required=true)@HeaderParam("customuserid") String customuserid
+,@ApiParam(value = "Identifies the user that are logged on the app (service)" ,required=true)@HeaderParam("customuserid") String customuserid
+,@ApiParam(value = "Identifies the system created the observation" )@HeaderParam("customsystemid") String customsystemid
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.usersUseridGet(userid,customsystemid,customuserid,securityContext);
+        return delegate.usersUseridGet(userid,customuserid,customsystemid,securityContext);
     }
     @GET
     @Path("/username/{username}")
     
     @Produces({ "application/json" })
-    @io.swagger.annotations.ApiOperation(value = "", notes = "", response = User.class, tags={  })
+    @io.swagger.annotations.ApiOperation(value = "Get user by username", notes = "Returns one user that match username.", response = User.class, tags={  })
     @io.swagger.annotations.ApiResponses(value = { 
-        @io.swagger.annotations.ApiResponse(code = 200, message = "OK", response = User.class) })
-    public Response usersUsernameUsernameGet(@ApiParam(value = "",required=true) @PathParam("username") String username
-,@ApiParam(value = "" ,required=true)@HeaderParam("customsystemid") String customsystemid
-,@ApiParam(value = "" ,required=true)@HeaderParam("customuserid") String customuserid
+        @io.swagger.annotations.ApiResponse(code = 200, message = "A user", response = User.class) })
+    public Response usersUsernameUsernameGet(@ApiParam(value = "The user's name",required=true) @PathParam("username") String username
+,@ApiParam(value = "Identifies the user that are logged on the app (service)" ,required=true)@HeaderParam("customuserid") String customuserid
+,@ApiParam(value = "Identifies the system created the observation" )@HeaderParam("customsystemid") String customsystemid
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.usersUsernameUsernameGet(username,customsystemid,customuserid,securityContext);
+        return delegate.usersUsernameUsernameGet(username,customuserid,customsystemid,securityContext);
     }
 }

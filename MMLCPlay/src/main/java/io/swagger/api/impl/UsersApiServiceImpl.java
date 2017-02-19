@@ -1,7 +1,6 @@
 package io.swagger.api.impl;
 
 import java.net.URI;
-
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -14,8 +13,7 @@ import io.swagger.model.User;
 import life.memy.data.DatabaseClass;
 import life.memy.data.UserServiceDao;
 
-//@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-11-07T18:24:01.292Z")
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-12-25T15:49:48.554Z")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-02-09T12:54:48.614Z")
 public class UsersApiServiceImpl extends UsersApiService {
 	private DatabaseClass database = DatabaseClass.getDatabaseClass();
 	UserServiceDao userService = database.getUserRepo();
@@ -51,7 +49,7 @@ public class UsersApiServiceImpl extends UsersApiService {
     }
     @Override
     public Response usersUseridGet(String userid, String customsystemid, String customuserid, SecurityContext securityContext) throws NotFoundException {
-    	User user = userService.findById(userid, User.class);
+    	User user = userService.findById(userid);
         return Response.ok().entity(user).build();
     }
     @Override
