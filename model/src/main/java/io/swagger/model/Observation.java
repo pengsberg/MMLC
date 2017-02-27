@@ -21,25 +21,18 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.model.Location;
 import io.swagger.model.Observationvaluetype;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Observation
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-02-09T12:54:48.614Z")
-public class Observation   {
+public class Observation extends Entity {
   @JsonProperty("docid")
   private String docid = null;
 
   @JsonProperty("systemid")
   private String systemid = null;
-
-  @JsonProperty("created")
-  private Date created = null;
-
-  @JsonProperty("updated")
-  private Date updated = null;
 
   @JsonProperty("userid")
   private String userid = null;
@@ -101,44 +94,6 @@ public class Observation   {
 
   public void setSystemid(String systemid) {
     this.systemid = systemid;
-  }
-
-  public Observation created(Date created) {
-    this.created = created;
-    return this;
-  }
-
-   /**
-   * Get created
-   * @return created
-  **/
-  @JsonProperty("created")
-  @ApiModelProperty(value = "")
-  public Date getCreated() {
-    return created;
-  }
-
-  public void setCreated(Date created) {
-    this.created = created;
-  }
-
-  public Observation updated(Date updated) {
-    this.updated = updated;
-    return this;
-  }
-
-   /**
-   * Get updated
-   * @return updated
-  **/
-  @JsonProperty("updated")
-  @ApiModelProperty(value = "")
-  public Date getUpdated() {
-    return updated;
-  }
-
-  public void setUpdated(Date updated) {
-    this.updated = updated;
   }
 
   public Observation userid(String userid) {
@@ -310,8 +265,6 @@ public class Observation   {
     Observation observation = (Observation) o;
     return Objects.equals(this.docid, observation.docid) &&
         Objects.equals(this.systemid, observation.systemid) &&
-        Objects.equals(this.created, observation.created) &&
-        Objects.equals(this.updated, observation.updated) &&
         Objects.equals(this.userid, observation.userid) &&
         Objects.equals(this.subjectid, observation.subjectid) &&
         Objects.equals(this.observationtype, observation.observationtype) &&
@@ -324,7 +277,7 @@ public class Observation   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(docid, systemid, created, updated, userid, subjectid, observationtype, observationcreateddatetime, location, valuecomponents, comment, interpretation);
+    return Objects.hash(docid, systemid, userid, subjectid, observationtype, observationcreateddatetime, location, valuecomponents, comment, interpretation);
   }
 
 
@@ -335,8 +288,6 @@ public class Observation   {
     
     sb.append("    docid: ").append(toIndentedString(docid)).append("\n");
     sb.append("    systemid: ").append(toIndentedString(systemid)).append("\n");
-    sb.append("    created: ").append(toIndentedString(created)).append("\n");
-    sb.append("    updated: ").append(toIndentedString(updated)).append("\n");
     sb.append("    userid: ").append(toIndentedString(userid)).append("\n");
     sb.append("    subjectid: ").append(toIndentedString(subjectid)).append("\n");
     sb.append("    observationtype: ").append(toIndentedString(observationtype)).append("\n");

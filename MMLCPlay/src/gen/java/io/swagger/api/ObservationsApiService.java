@@ -7,7 +7,6 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import java.util.Date;
 import io.swagger.model.Observation;
-import io.swagger.model.Observations;
 
 import java.util.List;
 import io.swagger.api.NotFoundException;
@@ -24,5 +23,5 @@ public abstract class ObservationsApiService {
     public abstract Response observationsObservationidGet(String observationid,String customuserid,String customsystemid,SecurityContext securityContext) throws NotFoundException;
     public abstract Response observationsPost(Observation observation, UriInfo uriInfo, SecurityContext securityContext) throws NotFoundException;
     public abstract Response observationsPut(Observation observation, SecurityContext securityContext) throws NotFoundException;
-    public abstract Response observationsTypeObservationtypeGet(String observationtype,String customuserid,Date startdate,Date enddate,String sort,Integer limit,String customsystemid,SecurityContext securityContext) throws NotFoundException;
+    public abstract Response observationsTypeObservationtypeGet(String observationtype,String customuserid,String startdate,String enddate,String sort,Integer limit,String customsystemid,SecurityContext securityContext) throws NotFoundException;
 }

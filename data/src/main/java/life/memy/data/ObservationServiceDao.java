@@ -5,22 +5,24 @@ import static com.couchbase.client.java.query.dsl.Expression.x;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+import javax.ws.rs.core.Response;
 
 import com.couchbase.client.core.CouchbaseException;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.document.JsonDocument;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.query.N1qlQuery;
+import com.couchbase.client.java.query.N1qlQueryResult;
 import com.couchbase.client.java.query.N1qlQueryRow;
 import com.couchbase.client.java.query.Statement;
 import com.couchbase.client.java.query.dsl.Sort;
-import com.couchbase.client.java.query.dsl.path.AsPath;
 
 import io.swagger.model.Observation;
 import life.memy.exception.DataNotFoundException;
 import life.memy.exception.RepositoryException;
+import life.memy.json.DateParam;
 
 public class ObservationServiceDao extends BaseDao {
 	
@@ -65,8 +67,11 @@ public class ObservationServiceDao extends BaseDao {
 	}
 	
 	
-	public List<Observation> findByObservationtype(String observationtype, String customuserid, 
-			Date startdate, Date enddate, String sort, Integer limit, String customsystemid ) {
+	public Response findByObservationtype(String observationtype, String customuserid, 
+			String startdate, String enddate, String sort, Integer limit, String customsystemid ) {
+		
+		final String ASC = "+";
+		final String DESC = "-";
 		
 		if (customuserid == null) {
 			throw new IllegalArgumentException("customuserid is null");
@@ -75,33 +80,55 @@ public class ObservationServiceDao extends BaseDao {
 			throw new IllegalArgumentException("observationtype is null");
 		}
 		
-		AsPath prefix = select("*").from(bucket.name());
+//		Statement statement = select("*").from(bucket.name())
+//				.where(x("observationtype").eq("$observationtype")
+//						.and(x("type").eq("$type"))
+//						.and(x("subjectid").eq("$subjectid")))
+//						.orderBy(Sort.desc("observationcreateddatetime"));
 		
+		String statement = "SELECT * FROM memylifePOC WHERE observationtype = $observationtype AND type = $type AND subjectid = $subjectid";
+		
+		String startdateParsedISO = null;
+		String enddateParsedISO= null;
+		DateParam startdateParam = null;
+		DateParam enddateParam = null;
+
+		// Selecting observations for a period
 		if (startdate != null && enddate != null) {
-			prefix.where(x("observationtype").eq("$observationtype")
-					.and(x("type").eq("$type"))
-					.and(x("subjectid").eq("$subjectid"))
-					.and(x("observationcreateddatetime").gte("$startdate"))
-					.and(x("observationcreateddatetime").lte("$enddate")))
-					.orderBy(Sort.desc("observationcreateddatetime"));
+			statement += " AND observationcreateddatetime >= $startdate AND observationcreateddatetime <= $enddate";
+			startdateParam = new DateParam(startdate);
+			enddateParam = new DateParam(enddate);
+		} 
+		
+		// Sorting the observations
+		if (sort != null) {
+			if (sort.startsWith(ASC)) {
+				statement += " ORDER BY " + sort.substring(1) + " ASC";
+			} else {
+				statement += " ORDER BY " + sort.substring(1) + " DESC";
+			}
+		}
+		 // Limit the total number of observations
+		if (limit != null) {
+			statement += " LIMIT " + limit;
 		}
 		
-		Statement statement = select("*").from(bucket.name())
-				.where(x("observationtype").eq("$observationtype")
-						.and(x("type").eq("$type"))
-						.and(x("subjectid").eq("$subjectid")))
-						.orderBy(Sort.desc("observationcreateddatetime"));
-		
-		
 		JsonObject placeholderValues = JsonObject.create()
-						.put("observationtype", observationtype)
-						.put("type", "observation")
-						.put("subjectid", customuserid);
-		
-		N1qlQuery q = N1qlQuery.parameterized(statement, placeholderValues );
-		
+				.put("bucketname", bucketName)
+				.put("observationtype", observationtype)
+				.put("type", "observation")
+				.put("subjectid", customuserid)
+				.put("startdate", startdateParam.getIsoDate())
+				.put("enddate", enddateParam.getIsoDate());
+			
+		N1qlQuery query = N1qlQuery.parameterized(statement, placeholderValues );
 		List<Observation> observations = new ArrayList<>();
-		for (N1qlQueryRow row : bucket.query(q)) {
+		
+		// Getting the number of retreived observations
+		N1qlQueryResult result = bucket.query(query);
+		int size = result.allRows().size();
+		
+		for (N1qlQueryRow row : result) {
 		    JsonObject jsonObject = row.value();
 		    JsonObject value = (JsonObject) jsonObject.get(bucketName);
 		    Observation observation = converter.fromJson(value.toString(), Observation.class);
@@ -111,7 +138,10 @@ public class ObservationServiceDao extends BaseDao {
 		if (observations.size() == 0) {
 			throw new DataNotFoundException("Observation with observationtype " + observationtype + " not found");
 		}
-		return observations;
+		
+		return Response.ok().entity(observations)
+				.header("X-total-count", size)
+				.build();
 	}
 
 	

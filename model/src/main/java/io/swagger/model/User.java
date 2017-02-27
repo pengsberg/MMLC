@@ -18,24 +18,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Date;
 
 /**
  * User
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-02-09T12:54:48.614Z")
-public class User   {
+public class User extends Entity  {
   @JsonProperty("docid")
   private String docid = null;
 
   @JsonProperty("userid")
   private String userid = null;
-
-  @JsonProperty("created")
-  private Date created = null;
-
-  @JsonProperty("updated")
-  private Date updated = null;
 
   @JsonProperty("username")
   private String username = null;
@@ -106,44 +99,6 @@ public class User   {
 
   public void setUserid(String userid) {
     this.userid = userid;
-  }
-
-  public User created(Date created) {
-    this.created = created;
-    return this;
-  }
-
-   /**
-   * Get created
-   * @return created
-  **/
-  @JsonProperty("created")
-  @ApiModelProperty(value = "")
-  public Date getCreated() {
-    return created;
-  }
-
-  public void setCreated(Date created) {
-    this.created = created;
-  }
-
-  public User updated(Date updated) {
-    this.updated = updated;
-    return this;
-  }
-
-   /**
-   * Get updated
-   * @return updated
-  **/
-  @JsonProperty("updated")
-  @ApiModelProperty(value = "")
-  public Date getUpdated() {
-    return updated;
-  }
-
-  public void setUpdated(Date updated) {
-    this.updated = updated;
   }
 
   public User username(String username) {
@@ -367,8 +322,6 @@ public class User   {
     User user = (User) o;
     return Objects.equals(this.docid, user.docid) &&
         Objects.equals(this.userid, user.userid) &&
-        Objects.equals(this.created, user.created) &&
-        Objects.equals(this.updated, user.updated) &&
         Objects.equals(this.username, user.username) &&
         Objects.equals(this.email, user.email) &&
         Objects.equals(this.firstname, user.firstname) &&
@@ -384,7 +337,7 @@ public class User   {
 
   @Override
   public int hashCode() {
-    return Objects.hash(docid, userid, created, updated, username, email, firstname, lastname, fullname, gender, birthdate, birthplace, phonenumber, passcode, password);
+    return Objects.hash(docid, userid, username, email, firstname, lastname, fullname, gender, birthdate, birthplace, phonenumber, passcode, password);
   }
 
 
@@ -395,8 +348,6 @@ public class User   {
     
     sb.append("    docid: ").append(toIndentedString(docid)).append("\n");
     sb.append("    userid: ").append(toIndentedString(userid)).append("\n");
-    sb.append("    created: ").append(toIndentedString(created)).append("\n");
-    sb.append("    updated: ").append(toIndentedString(updated)).append("\n");
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    firstname: ").append(toIndentedString(firstname)).append("\n");

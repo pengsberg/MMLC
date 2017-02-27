@@ -43,13 +43,13 @@ public class ObservationsApiServiceImpl extends ObservationsApiService {
         		.build();
     }
     @Override
-    public Response observationsPut(Observation observation, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    public Response observationsPut(Observation observationIn, SecurityContext securityContext) throws NotFoundException {
+        Observation observation = observationService.update(observationIn);
+        return Response.ok().entity(observation).build();
     }
     @Override
-    public Response observationsTypeObservationtypeGet(String observationtype, String customuserid, Date startdate, Date enddate, String sort, Integer limit, String customsystemid, SecurityContext securityContext) throws NotFoundException {
-    	List<Observation> observations = observationService.findByObservationtype(observationtype,customuserid, startdate, enddate, sort, limit, customsystemid);
-        return Response.ok().entity(observations).build();
+    public Response observationsTypeObservationtypeGet(String observationtype, String customuserid, String startdate, String enddate, String sort, Integer limit, String customsystemid, SecurityContext securityContext) throws NotFoundException {
+    	Response response = observationService.findByObservationtype(observationtype,customuserid, startdate, enddate, sort, limit, customsystemid);
+        return response;
     }
 }
