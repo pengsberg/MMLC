@@ -20,6 +20,10 @@ public class BaseDao {
 	protected Bucket bucket;
 	protected String bucketName = null;
 	
+	
+	public void setBucket(Bucket bucket) {
+		this.bucket = bucket;
+	}
 	/**
 	 * Constructor
 	 * 
@@ -38,6 +42,9 @@ public class BaseDao {
 			throw new RepositoryException(e);
 		}
 	}
+	
+	public BaseDao() {}
+
 	
 	/**
 	  * @see Repository#findById(String, Class<? extends T>) findById

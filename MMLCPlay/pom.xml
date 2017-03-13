@@ -12,7 +12,7 @@
 	<artifactId>MMLCPlay</artifactId>
 	<packaging>war</packaging>
 	<name>MMLCPlay</name>
-	<version>1.0.2</version>
+	<version>1.0.5</version>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<plugins>
@@ -74,12 +74,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit-version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>${servlet-api-version}</version>
@@ -103,6 +97,12 @@
 			<groupId>io.swagger</groupId>
 			<artifactId>model</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.restassured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>2.4.1</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<repositories>
