@@ -36,6 +36,10 @@ public class ObservationServiceDao extends BaseDao {
 		super(cluster, bucketName);
 	}
 	
+	public ObservationServiceDao() {
+		
+	}
+	
 	/**
 	  * @see Repository#findById(String, Class<? extends T>) findById
 	  */
@@ -74,10 +78,10 @@ public class ObservationServiceDao extends BaseDao {
 		final String DESC = "-";
 		
 		if (customuserid == null) {
-			throw new IllegalArgumentException("customuserid is null");
+			throw new RepositoryException("customuserid is null");
 		}
 		if (observationtype == null) {
-			throw new IllegalArgumentException("observationtype is null");
+			throw new RepositoryException("observationtype is null");
 		}
 		
 //		Statement statement = select("*").from(bucket.name())
@@ -88,8 +92,6 @@ public class ObservationServiceDao extends BaseDao {
 		
 		String statement = "SELECT * FROM memylifePOC WHERE observationtype = $observationtype AND type = $type AND subjectid = $subjectid";
 		
-		String startdateParsedISO = null;
-		String enddateParsedISO= null;
 		DateParam startdateParam = null;
 		DateParam enddateParam = null;
 
@@ -98,7 +100,11 @@ public class ObservationServiceDao extends BaseDao {
 			statement += " AND observationcreateddatetime >= $startdate AND observationcreateddatetime <= $enddate";
 			startdateParam = new DateParam(startdate);
 			enddateParam = new DateParam(enddate);
-		} 
+		} else {
+			// to avoid null pointer exception
+			startdateParam = new DateParam("2017-01-01");
+			enddateParam = new DateParam("2017-01-01");
+		}
 		
 		// Sorting the observations
 		if (sort != null) {
@@ -163,7 +169,7 @@ public class ObservationServiceDao extends BaseDao {
 	
 	public Observation update(Observation observation) {
 		if(isBlank(observation.getDocid())) {
-			throw new IllegalArgumentException("docid is null");
+			throw new RepositoryException("docid is null");
 		}
 		
 		JsonDocument docIn = toJsonDocument(observation);
@@ -180,7 +186,7 @@ public class ObservationServiceDao extends BaseDao {
 	public List<Observation> getAllObservations(String customuserid) {
 		
 		if (customuserid == null) {
-			throw new IllegalArgumentException("customuserid is null");
+			throw new RepositoryException("customuserid is null");
 		}
 		
 		Statement statement = select("*").from(bucket.name())
@@ -218,7 +224,7 @@ public class ObservationServiceDao extends BaseDao {
 	 */
 	protected Observation fromJsonDocument(JsonDocument doc) {
 		if (doc == null) {
-			throw new IllegalArgumentException("document is null");
+			throw new RepositoryException("document is null");
 		}
 		JsonObject content = doc.content();
 		if (content == null) {
@@ -238,7 +244,7 @@ public class ObservationServiceDao extends BaseDao {
 	 */
 	protected JsonDocument toJsonDocument(Observation observation) {
 		if (observation == null) {
-			throw new IllegalArgumentException("observation is null");
+			throw new RepositoryException("observation is null");
 		}
 		String id = observation.getDocid();
 		if (id == null) {

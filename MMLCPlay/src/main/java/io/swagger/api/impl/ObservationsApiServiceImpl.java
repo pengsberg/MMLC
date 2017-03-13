@@ -21,7 +21,7 @@ public class ObservationsApiServiceImpl extends ObservationsApiService {
 	ObservationServiceDao observationService = database.getObservationRepo();
 	
     @Override
-    public Response observationsGet(String customsystemid, String customuserid, SecurityContext securityContext) throws NotFoundException {
+    public Response observationsGet(String customuserid, String customsystemid, SecurityContext securityContext) throws NotFoundException {
         List<Observation> observations = observationService.getAllObservations(customuserid);
         return Response.ok().entity(observations).build();
     }
