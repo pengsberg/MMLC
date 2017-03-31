@@ -9,6 +9,8 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.Logger;
+
 import com.couchbase.client.core.CouchbaseException;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.document.JsonDocument;
@@ -25,7 +27,7 @@ import life.memy.exception.RepositoryException;
 import life.memy.json.DateParam;
 
 public class ObservationServiceDao extends BaseDao {
-	
+	final static Logger logger = Logger.getLogger(ObservationServiceDao.class);
 	/**
 	 * Constructor
 	 * 
@@ -184,7 +186,7 @@ public class ObservationServiceDao extends BaseDao {
 	
 	
 	public List<Observation> getAllObservations(String customuserid) {
-		
+		logger.debug("Entering getAllObservations");
 		if (customuserid == null) {
 			throw new RepositoryException("customuserid is null");
 		}

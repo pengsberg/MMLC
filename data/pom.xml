@@ -19,15 +19,26 @@
 			<artifactId>model</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.glassfish.jersey.containers</groupId> -->
+<!-- 			<artifactId>jersey-container-servlet-core</artifactId> -->
+<!-- 			<version>${jersey2-version}</version> -->
+<!-- 		</dependency> -->
 		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-servlet-core</artifactId>
-			<version>${jersey2-version}</version>
+			<groupId>com.squareup.okhttp</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>${okhttp-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 	</dependencies>
 	<properties>
 		<java.version>1.8</java.version>
 		<jersey2-version>2.22.2</jersey2-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<okhttp-version>2.7.5</okhttp-version>
 	</properties>
 </project>

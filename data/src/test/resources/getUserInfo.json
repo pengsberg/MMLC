@@ -1,0 +1,1 @@
+{"totalResults":1,"schemas":["urn:scim:schemas:core:1.0"],"Resources":[{"meta":{"created":"2017-03-13T16:42:10","location":"https://localhost:9443/wso2/scim/Users/6921cfe8-9f11-4eb2-a4cc-12fe9619a13c","lastModified":"2017-03-13T16:42:10"},"id":"6921cfe8-9f11-4eb2-a4cc-12fe9619a13c","userName":"per456"}]}

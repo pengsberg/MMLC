@@ -8,6 +8,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.couchbase.client.core.CouchbaseException;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.document.JsonDocument;
@@ -19,8 +21,13 @@ import com.couchbase.client.java.query.Statement;
 import io.swagger.model.User;
 import life.memy.exception.DataNotFoundException;
 import life.memy.exception.RepositoryException;
+import life.memy.identity.IdentityServerFacade;
+import life.memy.identity.IdentityServerFacadeImpl;
 
 public class UserServiceDao extends BaseDao {
+	final static Logger logger = Logger.getLogger(UserServiceDao.class);
+	
+	IdentityServerFacade isFacade = new IdentityServerFacadeImpl();
 
 	public UserServiceDao(Cluster cluster, String bucketName) {
 		super(cluster, bucketName);
@@ -57,6 +64,14 @@ public class UserServiceDao extends BaseDao {
 	}
 	
 	public User findByUsername(String userName) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Entering findByUsername " + userName);
+		}
+		String userid = isFacade.getUserId(userName);
+		if (userid == null) {
+    		throw new DataNotFoundException("User with username " + userName + " not found");
+    	}
+		
 		Statement statement = select("*")
 				.from(i(bucket.name()))
 				.where(x("username").eq("$username").and(x("type").eq("$type")));
@@ -101,6 +116,17 @@ public class UserServiceDao extends BaseDao {
 	  * @see Repository#create(T, Class<? extends T>) create
 	  */
 	public User create(User user) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Entering create user " + user.getUsername() + ")");
+		}
+		String userid;
+		try {
+			userid = isFacade.createUser(user.getUsername());
+		} catch(Exception e) {
+			logger.error("Exception from IS when creating user: " + e.getMessage());
+			throw e;
+		}
+		user.setUserid(userid);
 		user.setDocid(getNextId(User.class, 1, 100));
 		JsonDocument docIn = toJsonDocument(user);
 		JsonDocument docOut;
