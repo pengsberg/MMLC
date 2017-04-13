@@ -6,14 +6,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import life.memy.data.DatabaseClass;
+import io.swagger.model.User;
 import life.memy.exception.RepositoryException;
 
 public class IdentityServerFacadeImpl implements IdentityServerFacade {
 	final static Logger logger = Logger.getLogger(IdentityServerFacade.class);
 	
 	private IdentityClient identityClient = new IdentityClientImpl();
-	private final String URL = this.getUrl();
 
 	/*
 	 * (non-Javadoc)
@@ -29,11 +28,11 @@ public class IdentityServerFacadeImpl implements IdentityServerFacade {
 	
 	
 	@Override
-	public String getUserId(String userName) {
+	public String findUseridByUsername(String userName) {
 		JSONParser parser = new JSONParser();
 		String jsonData = null;
 		JSONObject jobject = null;
-		jsonData = identityClient.getUserId(this.getUserFilterEndpoint(userName));
+		jsonData = identityClient.findUseridByUsername(userName);
 		
 		try {
 			jobject = (JSONObject) parser.parse(jsonData);
@@ -41,13 +40,45 @@ public class IdentityServerFacadeImpl implements IdentityServerFacade {
 			throw new RepositoryException(e);
 		}
 		JSONArray resources = (JSONArray) jobject.get("Resources");
-		String id = null;
-		if (noErrors(resources)) {
-			JSONObject obj = (JSONObject) resources.get(0);
-			id = (String) obj.get("id");
+		
+		if (resources != null) {
+			String id = null;
+			if (noErrors(resources)) {
+				JSONObject obj = (JSONObject) resources.get(0);
+				id = (String) obj.get("id");
+			}
+			return id != null ? id : jsonData;
+		} else {
+			return jsonData;
 		}
-		return id != null ? id : jsonData;
 	}
+	
+	@Override
+	public String findUserByUserid(String userid) {
+		JSONParser parser = new JSONParser();
+		String jsonData = null;
+		JSONObject jobject = null;
+		jsonData = identityClient.findUserByUserid(userid);
+		try {
+			jobject = (JSONObject) parser.parse(jsonData);
+		} catch (ParseException e) {
+			throw new RepositoryException(e);
+		}
+		JSONArray resources = (JSONArray) jobject.get("Resources");
+		
+		if (resources != null) {
+			String id = null;
+			if (noErrors(resources)) {
+				JSONObject obj = (JSONObject) resources.get(0);
+				id = (String) obj.get("id");
+			}
+			return id != null ? id : jsonData;
+		} else {
+			return jsonData;
+		}
+	}
+
+
 
 	/*
 	 * (non-Javadoc)
@@ -55,11 +86,11 @@ public class IdentityServerFacadeImpl implements IdentityServerFacade {
 	 * @see life.memy.data.IdentityServerFacade#createUser(java.lang.String)
 	 */
 	@Override
-	public String createUser(String userName) {
+	public String createUser(User user) {
 		JSONParser parser = new JSONParser();
 		String jsonData = null;
 		JSONObject jobject = null;
-		jsonData = identityClient.createUser(userName);
+		jsonData = identityClient.createUser(user);
 
 		try {
 			jobject = (JSONObject) parser.parse(jsonData);
@@ -80,18 +111,6 @@ public class IdentityServerFacadeImpl implements IdentityServerFacade {
 	}
 
 	
-	private String getUrl() {
-		StringBuilder builder = new StringBuilder("https://").append(DatabaseClass.getProperties().getProperty(DatabaseClass.IDENTITY_NODE))
-				.append("/wso2/scim/Users");
-		return builder.toString();
-	}
-
-	public String getUserFilterEndpoint(String userName) {
-		String endpoint = URL + "?filter=userName%20Eq%20%22" + userName + "%22";
-		return endpoint;
-
-	}
-	
 	public void setClient(IdentityClient identityClient) {
 		this.identityClient = identityClient;
 	}
@@ -102,8 +121,11 @@ public class IdentityServerFacadeImpl implements IdentityServerFacade {
 //		String response = fac.createUser("per9634");
 //	    System.out.println("User created: " + response);
 
-		String user = fac.getUserId("per1234");
+//		String user = fac.findUseridByUsername("per1234");
+//		System.out.println("User: " + user);
+		
+		String user = fac.findUserByUserid("3e076302-4c40-4699-8ef4-ed485b1c32c1");
 		System.out.println("User: " + user);
+		
 	}
-
 }

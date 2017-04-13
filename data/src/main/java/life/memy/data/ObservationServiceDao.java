@@ -233,7 +233,7 @@ public class ObservationServiceDao extends BaseDao {
 			throw new IllegalStateException("document has no content");
 		}
 		Observation result = converter.fromJson(content.toString(), Observation.class);
-//		result.setCas(doc.cas());
+		result.setCas(doc.cas());
 		return result;
 	}
 	

@@ -49,7 +49,8 @@ public class UsersApiServiceImpl extends UsersApiService {
     }
     @Override
     public Response usersUseridGet(String userid, String customsystemid, String customuserid, SecurityContext securityContext) throws NotFoundException {
-    	User user = userService.findById(userid);
+    	//User user = userService.findById(userid);
+    	User user = userService.findByUserid(userid);
         return Response.ok().entity(user).build();
     }
     @Override

@@ -3,45 +3,42 @@ package life.memy.identity.scim;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.model.User;
 import life.memy.exception.RepositoryException;
 
 public class UserFactory {
 	
-	public static String getUserJson(String userName) {
+	public static String getUserJson(User user) {
 		ObjectMapper objectMapper = new ObjectMapper();
-		ScimUser user = createUser(userName);
+		ScimUser scimUser = createUser(user);
 		String json = null;
 		try {
-			json = objectMapper.writeValueAsString(user);
+			json = objectMapper.writeValueAsString(scimUser);
 		} catch (JsonProcessingException e) {
 			throw new RepositoryException(e);
 		}
 		return json;
 	}
 	
-	private static ScimUser createUser(String userName) {
+	private static ScimUser createUser(User user) {
 		Name name = new Name();
-		name.setFamilyName(userName);
-		name.setGivenName(userName);
+		name.setFamilyName(user.getLastname());
+		name.setGivenName(user.getFirstname());
 		
-		Emails[] emails = new Emails[2];
+		Emails[] emails = new Emails[1];
 		Emails email = new Emails();
+		email.setValue(user.getEmail());
 		email.setPrimary("true");
-		email.setValue(userName + "@lala");
 		email.setType("home");
-		Emails email2 = new Emails();
-		email2.setValue(userName + "work@lala");
-		email2.setType("work");
 		emails[0] = email;
-		emails[1] = email2;
 		
-		ScimUser user = new ScimUser();
-		user.setUserName(userName);
-		user.setPassword("hasinitg");
-		user.setEmails(emails);
-		user.setName(name);
+		ScimUser scimUser = new ScimUser();
+		scimUser.setUserName(user.getUsername());
+		scimUser.setPassword(user.getPassword());
+		scimUser.setEmails(emails);
+		scimUser.setName(name);
 		
-		return user;
+		return scimUser;
 	}
 	
 	private String getUser(String userName) {

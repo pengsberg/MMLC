@@ -1,10 +1,14 @@
 package life.memy.identity;
 
+import io.swagger.model.User;
+
 public interface IdentityServerFacade {
 
 	String getUsers();
 
-	String getUserId(String userName);
+	String findUseridByUsername(String userName);
+	
+	String findUserByUserid(String userid);
 
-	String createUser(String userName);
+	String createUser(User user);
 }

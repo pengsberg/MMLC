@@ -67,9 +67,13 @@ public class UserServiceDao extends BaseDao {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Entering findByUsername " + userName);
 		}
-		String userid = isFacade.getUserId(userName);
-		if (userid == null) {
-    		throw new DataNotFoundException("User with username " + userName + " not found");
+		String response = isFacade.findUseridByUsername(userName);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Got response from IS: " + response.toString());
+		}
+		if (response.contains("Errors")) {
+			logger.error("Response contains error - user not found");
+    		throw new DataNotFoundException(response);
     	}
 		
 		Statement statement = select("*")
@@ -90,6 +94,37 @@ public class UserServiceDao extends BaseDao {
 		}
 		if (user.getDocid() == null) {
     		throw new DataNotFoundException("User with username " + userName + " not found");
+    	}
+		return user;
+	}
+	
+	public User findByUserid(String userid) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Entering findByUserid " + userid);
+		}
+		String response = isFacade.findUserByUserid(userid);
+		if (response.contains("Errors")) {
+    		throw new DataNotFoundException(response);
+    	}
+		
+		Statement statement = select("*")
+				.from(i(bucket.name()))
+				.where(x("userid").eq("$userid").and(x("type").eq("$type")));
+
+		JsonObject placeholderValues = JsonObject.create()
+											.put("userid", userid)
+											.put("type", "user");
+
+		N1qlQuery q = N1qlQuery.parameterized(statement, placeholderValues );
+		
+		User user = new User();
+		for (N1qlQueryRow row : bucket.query(q)) {
+		    JsonObject jsonObject = row.value();
+		    JsonObject value = (JsonObject) jsonObject.get(bucketName);
+		    user = converter.fromJson(value.toString(), User.class);
+		}
+		if (user.getDocid() == null) {
+    		throw new DataNotFoundException("User with userid " + userid + " not found");
     	}
 		return user;
 	}
@@ -121,13 +156,13 @@ public class UserServiceDao extends BaseDao {
 		}
 		String userid;
 		try {
-			userid = isFacade.createUser(user.getUsername());
+			userid = isFacade.createUser(user);
 		} catch(Exception e) {
 			logger.error("Exception from IS when creating user: " + e.getMessage());
 			throw e;
 		}
 		user.setUserid(userid);
-		user.setDocid(getNextId(User.class, 1, 100));
+		user.setDocid("user::" + userid);
 		JsonDocument docIn = toJsonDocument(user);
 		JsonDocument docOut;
 		try {
@@ -169,7 +204,7 @@ public class UserServiceDao extends BaseDao {
 			throw new IllegalStateException("document has no content");
 		}
 		User result = converter.fromJson(content.toString(), User.class);
-//		result.setCas(doc.cas());
+		result.setCas(doc.cas());
 		return result;
 	}
 	

@@ -28,17 +28,16 @@ public class IdentityServerFacadeImplTest {
 	}
 
 	@Test
-	public void testGetUserId() throws IOException {
+	public void testFindUseridByUsername() throws IOException {
 		
 		String json = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream(USER_INFO), "UTF-8");
 		IdentityServerFacadeImpl isf = new IdentityServerFacadeImpl();
 		isf.setClient(client);
-		String endpoint = isf.getUserFilterEndpoint("per456");
-		when(client.getUserId(endpoint)).thenReturn(json);
+		when(client.findUseridByUsername("per456")).thenReturn(json);
 		
-		String userId = isf.getUserId("per456");
+		String userId = isf.findUseridByUsername("per456");
 		assertEquals("6921cfe8-9f11-4eb2-a4cc-12fe9619a13c", userId);
-		verify(client).getUserId(endpoint);
+		verify(client).findUseridByUsername("per456");
 	}
 
 

@@ -34,7 +34,7 @@ public class ObservationServiceDaoTest {
 		MockitoAnnotations.initMocks(this);
 	}
 
-	@Ignore
+	
 	@Test
 	public void testSimple() throws JSONException {
 		String expected = "{friends:[{id:123,name:\"Corby Page\"},{id:456,name:\"Carter Page\"}]}";
