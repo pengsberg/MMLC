@@ -1,0 +1,343 @@
+swagger: '2.0'
+info:
+  version: 1.0.6
+  title: API for memy.life
+  description: An API for accessing memy.life
+  contact:
+   name: "memy.life"
+   url: "http://memy.life"
+  license:
+   name: "MIT"
+   url: "http://opensource.org/licenses/MIT"
+host: 'ec2-52-38-66-22.us-west-2.compute.amazonaws.com:9443'
+basePath: /MMLCPlay-1.0.6/api
+schemes:
+  - https
+paths:
+  /observations:
+    get:
+      tags:
+        - "Observations"
+      summary: Gets some observations
+      description: Returns a list containing observations for the customerid 
+      produces:
+        - application/json
+      parameters:
+        - $ref: "#/parameters/customsystemid"
+        - $ref: "#/parameters/customuserid"
+      responses:
+        '200':
+          description: A list of observations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Observation'
+    post:
+      tags:
+        - "Observations"
+      summary: Creates an observation
+      description: Adds a new observation to the observations list
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: observation
+          in: body
+          description: The observation to create
+          required: true
+          schema:
+            $ref: '#/definitions/Observation'
+      responses:
+        201:
+          description: Observation succesfully created
+          schema:
+            $ref: '#/definitions/Observation'
+    put:
+      tags:
+        - "Observations"
+      summary: Updates an observation
+      description: Update existing observation by docid.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: observation
+          in: body
+          description: The observation to update
+          required: true
+          schema:
+            $ref: '#/definitions/Observation'
+      responses:
+        '200':
+          description: Observation succesfully updated
+          schema:
+            $ref: '#/definitions/Observation'
+  /observations/type/{observationtype}:
+    get:
+      tags:
+        - "Observations"
+      summary: Gets some observations
+      description: Returns a list of observations for its observation type and customuserid
+      produces:
+        - application/json
+      parameters:
+        - name: observationtype
+          in: path
+          description: The type of observation
+          required: true
+          type: string
+        - name: startdate
+          in: query
+          description: The start date of a date range (YYYY-MM-DD)
+          type: string
+        - name: enddate
+          in: query
+          description: The end date of a date range (YYYY-MM-DD)
+          type: string
+        - name: sort
+          in: query
+          description: Sorting order of observation
+          type: string
+          pattern: '[-+]observationcreateddatetime'
+        - $ref: "#/parameters/limit"
+        - $ref: "#/parameters/customsystemid"
+        - $ref: "#/parameters/customuserid"
+      responses:
+        '200':
+          description: A list of observations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Observation'
+  /observations/{observationid}:
+    get:
+      tags:
+        - "Observations"
+      produces:
+        - application/json
+      parameters:
+        - name: observationid
+          in: path
+          description: The observation identificator
+          required: true
+          type: string
+        - $ref: "#/parameters/customsystemid"
+        - $ref: "#/parameters/customuserid"
+      responses:
+        '200':
+          description: An observation
+          schema:
+            $ref: '#/definitions/Observation'
+        '400':
+          description: The observation does not exist
+  
+  /users:
+    get:
+      tags:
+        - "Users"
+      summary: Gets some users
+      description: Returns a list of all users.
+      produces:
+        - application/json
+      parameters:
+        - $ref: "#/parameters/customsystemid"
+        - $ref: "#/parameters/customuserid"
+      responses:
+        '200':
+          description: A list of users
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Observation'
+    post:
+      tags:
+        - "Users"
+      summary: Creates a user
+      description: Adds a new user to the user list.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '201':
+          description: User succesfully created
+          schema:
+            $ref: '#/definitions/User'
+    put:
+      tags:
+        - "Users"
+      summary: Update user
+      description: Update existing user by docid.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: user
+          in: body
+          description: The user to update
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: User succesfully updated
+          schema:
+            $ref: '#/definitions/User'
+  '/users/{userid}':
+    get:
+      tags:
+        - "Users"
+      summary: Get specified user
+      description: Returns one user that match userid.
+      produces:
+        - application/json
+      parameters:
+        - name: userid
+          in: path
+          required: true
+          type: string
+        - $ref: "#/parameters/customsystemid"
+        - $ref: "#/parameters/customuserid"
+      responses:
+        '200':
+          description: A user
+          schema:
+            $ref: '#/definitions/User'
+  '/users/username/{username}':
+    get:
+      tags:
+        - "Users"
+      summary: Get user by username
+      description: Returns one user that match username.
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          in: path
+          description: The user's name
+          required: true
+          type: string
+        - $ref: "#/parameters/customsystemid"
+        - $ref: "#/parameters/customuserid"
+      responses:
+        '200':
+          description: A user
+          schema:
+            $ref: '#/definitions/User'
+definitions:
+  User:
+    properties:
+      docid:
+        type: string
+      userid:
+        type: string
+      username:
+        type: string
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+      fullname:
+        type: string
+      gender:
+        type: string
+      birthdate:
+        type: string
+      birthplace:
+        type: string
+      phonenumber:
+        type: string
+      passcode:
+        type: string
+      password:
+        type: string
+  Location:
+    properties:
+      latitude:
+        type: number
+        format: double
+      longitude:
+        type: number
+        format: double
+      altitude:
+        type: number
+        format: double
+  Observationvaluetype:
+    properties:
+      valuedouble:
+        type: number
+      valuestring:
+        type: string
+      unit:
+        type: string
+      valuetype:
+        type: string
+  Observation:
+    properties:
+      docid:
+        type: string
+      systemid:
+        type: string
+      userid:
+        type: string
+      subjectid:
+        type: string
+      observationtype:
+        type: string
+      observationcreateddatetime:
+        type: string
+      location:
+        $ref: '#/definitions/Location'
+      valuecomponents:
+        type: array
+        items:
+          $ref: '#/definitions/Observationvaluetype'
+      comment:
+        type: string
+      interpretation:
+        type: string
+  Entity:
+    properties:
+      created:
+        type: string
+        format: date
+      updated:
+        type: string
+        format: date
+      cas:
+        type: integer
+        format: int
+parameters:
+    customsystemid:
+      name: customsystemid
+      in: header
+      description: Identifies the system created the observation
+      type: string
+    customuserid:
+      name: customuserid
+      in: header
+      description: Identifies the user that are logged on the app (service)
+      required: true
+      type: string
+    limit:
+      name: limit
+      in: query
+      description: Limits the number of returned items
+      required: false
+      type: integer
+      format: int32
+      default: 10
+      minimum: 10
+      maximum: 100
+      multipleOf: 10
